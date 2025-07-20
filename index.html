@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>restaurant mama 💕</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+
+        /* Responsive: จอมือถือ */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            .add-menu-form {
+                grid-template-columns: 1fr;
+            }
+            .control-buttons {
+                grid-template-columns: 1fr;
+            }
+            /* ลดขนาดฟอนต์และแพดดิ้งสำหรับมือถือ */
+            * {
+                font-size: 16px;
+                padding: 0;
+                margin: 0;
+            }
+            button, input, select, textarea {
+                font-size: 14px;
+                padding: 6px 10px;
+            }
+            .container {
+                transform: scale(1); /* ไม่ต้องย่อทั้ง container บนมือถือ */
+                padding: 10px;
+            }
+            .header, .section {
+                padding: 15px; /* ลด padding เล็กน้อย */
+                margin-bottom: 15px; /* ลด margin เล็กน้อย */
+                transform: scale(0.90); /* ย่อขนาดลง 10% (จากเดิม 5%) */
+                transform-origin: top left; /* ให้ย่อจากมุมซ้ายบน */
+                /* ******** จุดที่เพิ่มขอบสีดำสำหรับมือถือ ******** */
+                border: 1px solid #333; /* ขอบสีดำบางๆ */
+                /* ********************************************** */
+            }
+            .form-group label {
+                font-size: 1.2em;
+            }
+            select, input[type="number"], input[type="text"] {
+                padding: 12px;
+            }
+            .btn-order, .btn-reset, .btn-export, .btn-add {
+                padding: 12px 20px;
+                font-size: 1.2em;
+            }
+        }
+
+        /* Base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #A2D7DD 0%, #BEE6B4 100%); /* คุณสามารถเปลี่ยนสีตรงนี้ได้ */
+            min-height: 100vh;
+            color: #000;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            transform: scale(0.9); /* ย่อทั้ง container ลง 90% สำหรับจอใหญ่ */
+            transform-origin: top left; /* ย่อจากมุมซ้ายบน */
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            /* ******** จุดที่เพิ่มขอบสีดำสำหรับหน้าจอปกติ ******** */
+            border: 1px solid #333; /* ขอบสีดำบางๆ */
+            /* ************************************************* */
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .time-display {
+            color: #7f8c8d;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .summary-box {
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .total-sales {
+            background: #27ae60;
+            color: white;
+        }
+
+        .total-dishes {
+            background: #3498db;
+            color: white;
+        }
+
+        .avg-price {
+            background: #f39c12;
+            color: white;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            /* ******** จุดที่เพิ่มขอบสีดำสำหรับหน้าจอปกติ ******** */
+            border: 1px solid #333; /* ขอบสีดำบางๆ */
+            /* ************************************************* */
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 600;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #e74c3c;
+        }
+
+        .order-form {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.4em;
+        }
+
+        select, input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 20px;
+            border: 3px solid #bdc3c7;
+            border-radius: 10px;
+            font-size: 1.4em;
+            font-family: 'Kanit', sans-serif;
+            background: white;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-order {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 1.6em;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            font-family: 'Kanit', sans-serif;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn-order:hover {
+            background: #219a52;
+            transform: scale(1.02);
+        }
+
+        .btn-order:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .add-menu-section {
+            background: #ecf0f1;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .add-menu-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .add-menu-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .btn-add {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+        }
+
+        .btn-add:hover {
+            background: #2980b9;
+        }
+
+        .menu-stats {
+            margin-top: 20px;
+        }
+
+        .menu-item-stat {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #3498db; /* Default border */
+        }
+
+        .menu-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .menu-count {
+            background: #27ae60;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .sales-history {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .sale-item {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #27ae60;
+        }
+
+        .sale-info {
+            flex: 1;
+        }
+
+        .sale-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .sale-time {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        .sale-price {
+            color: #27ae60;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-right: 10px;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-reset, .btn-export {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .btn-reset {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-export {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍜 ระบบขายอาหารนับจาน</h1>
+            <div class="time-display" id="currentTime"></div>
+
+            <div class="summary-grid">
+                <div class="summary-box total-sales">
+                    💰 ยอดขายรวม<br>
+                    <span id="totalSales">0</span> บาท
+                </div>
+                <div class="summary-box total-dishes">
+                    🍽️ จำนวนจานรวม<br>
+                    <span id="totalDishes">0</span> จาน
+                </div>
+                <div class="summary-box avg-price">
+                    📊 เฉลี่ยราคาทั้งหมด<br>
+                    <span id="avgPrice">0</span> บาท
+                </div>
+                <div class="summary-box" style="background: #e67e22; color: white;">
+                    🗓️ เฉลี่ย/วัน (7 วัน)<br>
+                    <span id="avgDailySales">0</span> บาท/วัน
+                </div>
+                </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <h2>🛒 สั่งอาหาร</h2>
+
+                <div class="order-form">
+                    <div class="form-group">
+                        <label>เลือกเมนู:</label>
+                        <select id="menuSelect">
+                        <option value="">   เลือกเมนูอาหาร   </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantity">จำนวนจาน:</label>
+                        <input type="number" id="quantity" value="1" min="1" onchange="updateOrderButtonState()">
+                    </div>
+
+                    <button class="btn-order" id="orderBtn" onclick="orderFood()" disabled>
+                        🍽️ สั่งอาหาร
+                    </button>
+                </div>
+
+                <div class="menu-stats">
+                    <h3 style="margin-bottom: 15px; color: #2c3e50;">📈 สถิติเมนู</h3>
+                    <div id="menuStatsList">
+                        <p style="text-align: center; color: #7f8c8d; padding: 20px;">ยังไม่มีข้อมูล</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📋 ประวัติการขาย</h2>
+
+                <div class="sales-history" id="salesHistory">
+                    <p style="text-align: center; color: #7f8c8d; padding: 30px;">ยังไม่มีรายการขาย</p>
+                </div>
+
+                <div class="control-buttons">
+                    <button class="btn-reset" onclick="resetAll()">🗑️ รีเซ็ทข้อมูล</button>
+                    <button class="btn-export" onclick="exportData()">📄 ส่งออกข้อมูล</button>
+                </div>
+
+                ---
+
+                <div style="margin-top: 30px;">
+                    <h2>📊 กราฟยอดขายรายวัน</h2>
+                    <div style="width: 90%; margin: auto; height: 400px;"> <canvas id="salesChart"></canvas>
+                    </div>
+                    <p style="text-align: center; color: #7f8c8d; font-size: 0.9em; margin-top: 15px;">
+                        แสดงยอดขายรวมในช่วง 30 วันล่าสุด
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const menuItems = [
+            { id: 1, name: "ข้าวผัดกุ้ง", price: 60, soldCount: 0 },
+            { id: 2, name: "ผัดไทยหมู", price: 50, soldCount: 0 },
+            { id: 3, name: "ต้มยำกุ้ง", price: 80, soldCount: 0 },
+            { id: 4, name: "ผัดกะเพราไก่", price: 45, soldCount: 0 },
+            { id: 5, name: "ส้มตำไทย", price: 40, soldCount: 0 },
+            { id: 6, name: "ข้าวมันไก่", price: 50, soldCount: 0 },
+            { id: 7, name: "ข้าวขาหมู", price: 55, soldCount: 0 },
+            { id: 8, name: "ข้าวหมูแดง", price: 50, soldCount: 0 },
+            { id: 9, name: "ข้าวหมูกรอบ", price: 55, soldCount: 0 },
+            { id: 10, name: "ราดหน้าหมู", price: 50, soldCount: 0 },
+            { id: 11, name: "ผัดซีอิ๊วไก่", price: 45, soldCount: 0 },
+            { id: 12, name: "ข้าวผัดปู", price: 70, soldCount: 0 },
+            { id: 13, name: "ผัดเผ็ดหมูป่า", price: 60, soldCount: 0 },
+            { id: 14, name: "แกงเขียวหวานไก่", price: 55, soldCount: 0 },
+            { id: 15, name: "ผัดพริกแกงหมู", price: 50, soldCount: 0 },
+            { id: 16, name: "ข้าวต้มกุ้ง", price: 45, soldCount: 0 },
+            { id: 17, name: "เกาเหลาเลือดหมู", price: 50, soldCount: 0 },
+            { id: 18, name: "หมี่กระเฉดหมูกรอบ", price: 60, soldCount: 0 },
+            { id: 19, name: "ก๋วยจั๊บญวน", price: 55, soldCount: 0 },
+            { id: 20, name: "ข้าวไข่เจียวหมูสับ", price: 35, soldCount: 0 }
+        ];
+
+        let salesHistory = [];
+        let totalSales = 0;
+        let totalDishes = 0;
+        let dailySales = {}; // Format: { "YYYY-MM-DD": totalSalesForThatDay, ... }
+        let salesChartInstance = null; // เก็บ instance ของ Chart.js
+        let lastResetDate = ''; // เก็บวันที่ล่าสุดที่มีการรีเซ็ตข้อมูลรายวัน
+
+        window.onload = function() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            loadDataFromLocalStorage(); // โหลดข้อมูลเมื่อโหลดหน้าเว็บ
+            checkMidnight(); // เรียกใช้ครั้งแรกเมื่อโหลดหน้าเว็บ
+            setInterval(checkMidnight, 60000); // ตรวจสอบเที่ยงคืนทุกนาที
+            updateMenuSelect();
+            updateMenuStats();
+            updateSalesHistory();
+            updateSummary();
+            renderSalesChart(); // เรียกใช้เพื่อแสดงกราฟครั้งแรก
+
+            document.getElementById('menuSelect').addEventListener('change', updateOrderButtonState);
+            document.getElementById('quantity').addEventListener('input', updateOrderButtonState);
+        };
+
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('th-TH', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        function checkMidnight() {
+            const now = new Date();
+            const todayDateString = now.toISOString().slice(0, 10); // YYYY-MM-DD
+
+            // ตรวจสอบว่าวันที่ปัจจุบันแตกต่างจากวันที่รีเซ็ตล่าสุดหรือไม่
+            if (lastResetDate !== todayDateString) {
+                // ถ้าเป็นวันใหม่ ให้ทำการรีเซ็ต
+                resetDailyStats();
+                lastResetDate = todayDateString; // อัปเดตวันที่รีเซ็ตล่าสุด
+                saveDataToLocalStorage(); // บันทึกวันที่รีเซ็ตใหม่
+                showNotification('🌙 เที่ยงคืนแล้ว! รีเซ็ตสถิติประจำวัน');
+            }
+        }
+
+        // ฟังก์ชันใหม่สำหรับรีเซ็ตเฉพาะสถิติรายวัน
+        function resetDailyStats() {
+            menuItems.forEach(item => {
+                item.soldCount = 0; // รีเซ็ตจำนวนจานที่ขายได้สำหรับแต่ละเมนู
+            });
+            // ไม่ต้องรีเซ็ต dailySales ทั้งหมด เพื่อให้กราฟ 30 วันยังคงอยู่
+            // แต่จะทำให้ยอดขายรวม และจำนวนจานรวมรีเซ็ตสำหรับวันปัจจุบัน
+            totalSales = 0;
+            totalDishes = 0;
+            salesHistory = []; // รีเซ็ตประวัติการขายประจำวัน
+
+            updateMenuSelect();
+            updateMenuStats();
+            updateSalesHistory();
+            updateSummary();
+            document.getElementById('menuSelect').value = '';
+            document.getElementById('quantity').value = '1';
+            updateOrderButtonState();
+            renderSalesChart(); // อัปเดตกราฟให้เห็นข้อมูลของวันใหม่
+        }
+
+
+        function updateMenuSelect() {
+            const select = document.getElementById('menuSelect');
+            const currentValue = select.value;
+
+            select.innerHTML = '<option value=""> เลือกเมนูอาหาร </option>';
+
+            menuItems.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = `${item.name} | ${item.price} บาท`;
+                select.appendChild(option);
+            });
+
+            // Restore selection if possible
+            if (currentValue) {
+                select.value = currentValue;
+            }
+            updateOrderButtonState(); // Ensure button state is correct after updating select
+        }
+
+        function updateOrderButtonState() {
+            const selectElement = document.getElementById('menuSelect');
+            const quantityInput = document.getElementById('quantity');
+            const orderBtn = document.getElementById('orderBtn');
+
+            const selectedId = parseInt(selectElement.value);
+            const quantity = parseInt(quantityInput.value);
+
+            orderBtn.disabled = !selectedId || isNaN(quantity) || quantity <= 0;
+        }
+
+        function orderFood() {
+            const selectElement = document.getElementById('menuSelect');
+            const selectedId = parseInt(selectElement.value);
+            const quantityInput = document.getElementById('quantity');
+            const quantity = parseInt(quantityInput.value);
+
+            if (!selectedId) {
+                showNotification('⚠️ กรุณาเลือกเมนูก่อน');
+                return;
+            }
+
+            if (isNaN(quantity) || quantity <= 0) {
+                showNotification('⚠️ กรุณาระบุจำนวนจานที่ถูกต้อง (มากกว่า 0)');
+                return;
+            }
+
+            const menuItem = menuItems.find(item => item.id === selectedId);
+            if (!menuItem) {
+                showNotification('⚠️ ไม่พบเมนูที่เลือก');
+                return;
+            }
+
+            menuItem.soldCount += quantity;
+
+            // เพิ่มการอัปเดตยอดขายรายวัน
+            const today = new Date().toISOString().slice(0, 10); // Format YYYY-MM-DD
+            if (!dailySales[today]) {
+                dailySales[today] = 0;
+            }
+            dailySales[today] += menuItem.price * quantity;
+
+            for (let i = 0; i < quantity; i++) {
+                const sale = {
+                    id: Date.now() + i,
+                    menuId: selectedId,
+                    name: menuItem.name,
+                    price: menuItem.price,
+                    time: new Date().toLocaleString('th-TH')
+                };
+                salesHistory.unshift(sale);
+            }
+
+            totalSales += menuItem.price * quantity;
+            totalDishes += quantity;
+
+            updateMenuSelect();
+            updateMenuStats();
+            updateSalesHistory();
+            updateSummary();
+            saveDataToLocalStorage(); // บันทึกข้อมูลหลังจากสั่งอาหาร
+            renderSalesChart(); // อัปเดตกราฟหลังจากสั่งอาหาร
+
+            showNotification(`✅ สั่ง "${menuItem.name}" จำนวน ${quantity} จาน สำเร็จ!`);
+        }
+
+        // Function to add new menu (currently commented out in HTML)
+        function addMenu() {
+            const name = document.getElementById('newMenuName').value.trim();
+            const price = parseFloat(document.getElementById('newMenuPrice').value);
+
+            if (!name || !price || price <= 0) {
+                showNotification('⚠️ กรุณากรอกชื่อเมนูและราคาที่ถูกต้อง');
+                return;
+            }
+
+            const newMenu = {
+                id: Date.now(),
+                name: name,
+                price: price,
+                soldCount: 0
+            };
+
+            menuItems.push(newMenu);
+
+            updateMenuSelect();
+            updateMenuStats();
+
+            document.getElementById('newMenuName').value = '';
+            document.getElementById('newMenuPrice').value = '';
+
+            saveDataToLocalStorage(); // บันทึกข้อมูล
+            showNotification(`✅ เพิ่มเมนู "${name}" เรียบร้อย`);
+        }
+
+        function updateMenuStats() {
+            const statsDiv = document.getElementById('menuStatsList');
+
+            if (menuItems.length === 0) {
+                statsDiv.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 20px;">ยังไม่มีเมนู</p>';
+                return;
+            }
+
+            // สร้างสำเนาของเมนูเพื่อจัดเรียงโดยไม่กระทบอาร์เรย์เดิม
+            const sortedMenuItems = [...menuItems].sort((a, b) => b.soldCount - a.soldCount);
+
+            let html = '';
+            html += '<h4 style="margin-bottom: 10px; color: #2c3e50;">🥇 เมนูขายดีที่สุด:</h4>';
+            // แสดงเมนูขายดี 3 อันดับแรก
+            const topSelling = sortedMenuItems.filter(item => item.soldCount > 0).slice(0, 3);
+            if (topSelling.length > 0) {
+                topSelling.forEach(item => {
+                    html += `
+                        <div class="menu-item-stat" style="border-left: 4px solid #27ae60;">
+                            <div>
+                                <div class="menu-name">${item.name}</div>
+                                <div style="color: #7f8c8d; font-size: 0.9em;">ราคา: ${item.price} บาท</div>
+                            </div>
+                            <div class="menu-count">${item.soldCount} จาน</div>
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<p style="text-align: center; color: #7f8c8d; padding: 10px;">ยังไม่มีเมนูที่ขายได้</p>';
+            }
+
+            html += '<h4 style="margin-top: 20px; margin-bottom: 10px; color: #2c3e50;">📉 เมนูที่ยังไม่เคยขาย / ขายไม่ดีที่สุด:</h4>';
+            // แสดงเมนูที่ยังไม่เคยขาย หรือขายได้น้อยที่สุด (หากมีการเพิ่ม `cost` ในอนาคต อาจจะเรียงตามกำไร)
+            const worstSelling = [...menuItems].filter(item => item.soldCount === 0);
+            if (worstSelling.length > 0) {
+                // เรียงตามราคาจากน้อยไปมากสำหรับเมนูที่ยังไม่เคยขาย
+                worstSelling.sort((a, b) => a.price - b.price).slice(0, 3).forEach(item => {
+                    html += `
+                        <div class="menu-item-stat" style="border-left: 4px solid #e74c3c;">
+                            <div>
+                                <div class="menu-name">${item.name}</div>
+                                <div style="color: #7f8c8d; font-size: 0.9em;">ราคา: ${item.price} บาท</div>
+                            </div>
+                            <div class="menu-count">0 จาน</div>
+                        </div>
+                    `;
+                });
+            } else if (sortedMenuItems.length > 0) { // ถ้าทุกเมนูมีการขายแล้ว
+                 // แสดง 3 เมนูที่ขายได้น้อยที่สุด (แต่มากกว่า 0 จาน)
+                const lowestSold = sortedMenuItems.filter(item => item.soldCount > 0).slice(-3);
+                if (lowestSold.length > 0) {
+                     lowestSold.forEach(item => {
+                        html += `
+                            <div class="menu-item-stat" style="border-left: 4px solid #e74c3c;">
+                                <div>
+                                    <div class="menu-name">${item.name}</div>
+                                    <div style="color: #7f8c8d; font-size: 0.9em;">ราคา: ${item.price} บาท</div>
+                                </div>
+                                <div class="menu-count">${item.soldCount} จาน</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += '<p style="text-align: center; color: #7f8c8d; padding: 10px;">ทุกเมนูมีการขายแล้ว!</p>';
+                }
+
+            } else {
+                 html += '<p style="text-align: center; color: #7f8c8d; padding: 10px;">ไม่มีเมนูในระบบ</p>';
+            }
+
+            statsDiv.innerHTML = html;
+        }
+
+        function updateSalesHistory() {
+            const historyDiv = document.getElementById('salesHistory');
+
+            if (salesHistory.length === 0) {
+                historyDiv.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 30px;">ยังไม่มีรายการขาย</p>';
+                return;
+            }
+
+            let html = '';
+            salesHistory.slice(0, 15).forEach(sale => {
+                html += `
+                    <div class="sale-item">
+                        <div class="sale-info">
+                            <div class="sale-name">${sale.name}</div>
+                            <div class="sale-time">${sale.time}</div>
+                        </div>
+                        <div class="sale-price">${sale.price} บาท</div>
+                        <button class="btn-delete" onclick="deleteSale(${sale.id})" title="ลบรายการ">🗑️</button>
+                    </div>
+                `;
+            });
+
+            historyDiv.innerHTML = html;
+        }
+
+        function deleteSale(saleId) {
+            const saleIndex = salesHistory.findIndex(s => s.id === saleId);
+            if (saleIndex === -1) return;
+
+            const sale = salesHistory[saleIndex];
+
+            if (confirm(`ต้องการลบรายการ "${sale.name}" (เวลา ${sale.time}) หรือไม่?`)) {
+                salesHistory.splice(saleIndex, 1);
+
+                const menuItem = menuItems.find(item => item.id === sale.menuId);
+                if (menuItem && menuItem.soldCount > 0) {
+                    menuItem.soldCount--;
+                }
+
+                // ลดการอัปเดตยอดขายรายวัน
+                const saleDate = new Date(sale.time).toISOString().slice(0, 10); // Extract date from sale time
+                if (dailySales[saleDate]) {
+                    dailySales[saleDate] -= sale.price;
+                    if (dailySales[saleDate] < 0) dailySales[saleDate] = 0; // Prevent negative sales
+                }
+
+                totalSales -= sale.price;
+                totalDishes--;
+
+                updateMenuSelect();
+                updateMenuStats();
+                updateSalesHistory();
+                updateSummary();
+                saveDataToLocalStorage(); // บันทึกข้อมูลหลังจากลบรายการ
+                renderSalesChart(); // อัปเดตกราฟหลังจากลบรายการ
+
+                showNotification(`🗑️ ลบรายการแล้ว`);
+            }
+        }
+
+        function updateSummary() {
+            document.getElementById('totalSales').textContent = totalSales.toLocaleString();
+            document.getElementById('totalDishes').textContent = totalDishes.toLocaleString();
+
+            const avgPrice = totalDishes > 0 ? Math.round(totalSales / totalDishes) : 0;
+            document.getElementById('avgPrice').textContent = avgPrice;
+
+            // อัปเดตยอดขายเฉลี่ยต่อวัน
+            const avgDailySalesLast7Days = calculateAverageDailySales(7);
+            const avgDailySalesElement = document.getElementById('avgDailySales');
+            if (avgDailySalesElement) {
+                avgDailySalesElement.textContent = avgDailySalesLast7Days.toLocaleString();
+            }
+        }
+
+        function resetAll() { // ฟังก์ชันนี้ใช้สำหรับรีเซ็ต *ทั้งหมด* ด้วยตนเอง
+            if (salesHistory.length > 0 || totalDishes > 0) {
+                if (!confirm('⚠️ ต้องการรีเซ็ทข้อมูลทั้งหมดหรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้')) {
+                    return;
+                }
+            }
+
+            salesHistory = [];
+            totalSales = 0;
+            totalDishes = 0;
+            dailySales = {}; // Reset daily sales data
+            lastResetDate = ''; // รีเซ็ตวันที่รีเซ็ตล่าสุดด้วย
+
+            menuItems.forEach(item => {
+                item.soldCount = 0;
+            });
+
+            updateMenuSelect();
+            updateMenuStats();
+            updateSalesHistory();
+            updateSummary();
+            document.getElementById('menuSelect').value = '';
+            document.getElementById('quantity').value = '1';
+            updateOrderButtonState();
+            saveDataToLocalStorage(); // บันทึกข้อมูลหลังจากรีเซ็ต
+            renderSalesChart(); // อัปเดตกราฟหลังจากรีเซ็ต
+
+            showNotification('🔄 รีเซ็ทข้อมูลทั้งหมดแล้ว');
+        }
+
+        function exportData() {
+            if (salesHistory.length === 0) {
+                showNotification('ℹ️ ไม่มีข้อมูลให้ส่งออก');
+                return;
+            }
+
+            let data = `รายงานการขายอาหาร\n`;
+            data += `วันที่: ${new Date().toLocaleDateString('th-TH')}\n\n`;
+            data += `สรุป:\n`;
+            data += `ยอดขายรวม: ${totalSales.toLocaleString()} บาท\n`;
+            data += `จำนวนจาน: ${totalDishes} จาน\n`;
+            data += `ราคาเฉลี่ย: ${totalDishes > 0 ? Math.round(totalSales / totalDishes) : 0} บาท/จาน\n`;
+            data += `ยอดขายเฉลี่ย 7 วันล่าสุด: ${calculateAverageDailySales(7).toLocaleString()} บาท/วัน\n\n`; // เพิ่มข้อมูลนี้
+
+            data += `สถิติเมนู (จำนวนที่ขาย):\n`;
+            menuItems.sort((a, b) => b.soldCount - a.soldCount).forEach(item => {
+                if (item.soldCount > 0) {
+                    data += `${item.name}: ${item.soldCount} จาน (${item.soldCount * item.price} บาท)\n`;
+                }
+            });
+
+            data += `\nยอดขายรายวัน (30 วันล่าสุด):\n`;
+            const sortedDates = Object.keys(dailySales).sort(); // เรียงวันที่
+            sortedDates.forEach(date => {
+                data += `${new Date(date).toLocaleDateString('th-TH')}: ${dailySales[date].toLocaleString()} บาท\n`;
+            });
+
+
+            data += `\nประวัติการขาย (ล่าสุด 15 รายการ):\n`;
+            salesHistory.slice(0, 15).forEach((sale, index) => {
+                data += `${index + 1}. ${sale.name} - ${sale.price} บาท (${sale.time})\n`;
+            });
+
+            const blob = new Blob([data], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `รายงานการขาย_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+            showNotification('📄 ส่งออกข้อมูลแล้ว');
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // ฟังก์ชันสำหรับบันทึกและโหลดข้อมูลด้วย Local Storage
+        function saveDataToLocalStorage() {
+            localStorage.setItem('menuItems', JSON.stringify(menuItems));
+            localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
+            localStorage.setItem('totalSales', totalSales);
+            localStorage.setItem('totalDishes', totalDishes);
+            localStorage.setItem('dailySales', JSON.stringify(dailySales)); // บันทึก dailySales
+            localStorage.setItem('lastResetDate', lastResetDate); // บันทึกวันที่รีเซ็ตล่าสุด
+        }
+
+        function loadDataFromLocalStorage() {
+            const storedMenuItems = localStorage.getItem('menuItems');
+            if (storedMenuItems) {
+                const parsedMenuItems = JSON.parse(storedMenuItems);
+                menuItems.forEach(item => {
+                    const storedItem = parsedMenuItems.find(sItem => sItem.id === item.id);
+                    if (storedItem) {
+                        item.soldCount = storedItem.soldCount;
+                    }
+                });
+                parsedMenuItems.forEach(storedItem => {
+                    if (!menuItems.some(item => item.id === storedItem.id)) {
+                        menuItems.push(storedItem);
+                    }
+                });
+            }
+
+            const storedSalesHistory = localStorage.getItem('salesHistory');
+            if (storedSalesHistory) {
+                salesHistory = JSON.parse(storedSalesHistory);
+            }
+
+            const storedTotalSales = localStorage.getItem('totalSales');
+            if (storedTotalSales !== null) {
+                totalSales = parseInt(storedTotalSales);
+            }
+
+            const storedTotalDishes = localStorage.getItem('totalDishes');
+            if (storedTotalDishes !== null) {
+                totalDishes = parseInt(storedTotalDishes);
+            }
+
+            const storedDailySales = localStorage.getItem('dailySales');
+            if (storedDailySales) {
+                dailySales = JSON.parse(storedDailySales);
+            }
+
+            const storedLastResetDate = localStorage.getItem('lastResetDate');
+            if (storedLastResetDate) {
+                lastResetDate = storedLastResetDate;
+            }
+        }
+
+
+        // ฟังก์ชันสำหรับคำนวณยอดขายเฉลี่ยต่อวัน
+        function calculateAverageDailySales(days = 7) {
+            let totalSalesInPeriod = 0;
+            let numDaysWithSales = 0;
+
+            const today = new Date();
+
+            for (let i = 0; i < days; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() - i);
+                const dateString = d.toISOString().slice(0, 10);
+
+                if (dailySales[dateString] !== undefined && dailySales[dateString] > 0) {
+                    totalSalesInPeriod += dailySales[dateString];
+                    numDaysWithSales++;
+                }
+            }
+            return numDaysWithSales > 0 ? (totalSalesInPeriod / numDaysWithSales).toFixed(2) : 0;
+        }
+
+        // ฟังก์ชันสำหรับสร้างและอัปเดตกราฟยอดขาย
+        function renderSalesChart() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+
+            // เตรียมข้อมูลสำหรับกราฟ (30 วันล่าสุด)
+            const labels = [];
+            const data = [];
+            const today = new Date();
+
+            for (let i = 29; i >= 0; i--) { // ย้อนหลังไป 30 วัน (รวมวันนี้)
+                const d = new Date(today);
+                d.setDate(today.getDate() - i);
+                const dateString = d.toISOString().slice(0, 10); // YYYY-MM-DD
+                const formattedDate = d.toLocaleDateString('th-TH', { month: 'short', day: 'numeric' }); // เช่น "ก.ค. 20"
+
+                labels.push(formattedDate);
+                data.push(dailySales[dateString] || 0); // หากไม่มีข้อมูล ให้เป็น 0
+            }
+
+            // ทำลายกราฟเก่าถ้ามีอยู่แล้ว เพื่อวาดใหม่
+            if (salesChartInstance) {
+                salesChartInstance.destroy();
+            }
+
+            salesChartInstance = new Chart(ctx, {
+                type: 'line', // กราฟเส้น
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'ยอดขายรวม (บาท)',
+                        data: data,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2,
+                        tension: 0.4, // ทำให้เส้นกราฟโค้งมน
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // สำคัญเพื่อให้กราฟปรับขนาดตาม div
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'ยอดขายรวมรายวัน (30 วัน)', // อัปเดตข้อความกราฟ
+                            font: {
+                                size: 18,
+                                family: 'Kanit'
+                            },
+                            color: '#2c3e50'
+                        },
+                        legend: {
+                            display: false // ไม่แสดง legend
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'ยอดขาย (บาท)',
+                                font: {
+                                    family: 'Kanit'
+                                }
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString(); // แสดงตัวเลขแบบมีคอมม่า
+                                },
+                                font: {
+                                    family: 'Kanit'
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'วันที่',
+                                font: {
+                                    family: 'Kanit'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Kanit'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

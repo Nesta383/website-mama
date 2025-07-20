@@ -1,0 +1,43 @@
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+    .add-menu-form {
+        grid-template-columns: 1fr;
+    }
+    .control-buttons {
+        grid-template-columns: 1fr;
+    }
+    * {
+        font-size: 16px;
+        padding: 0;
+        margin: 0;
+    }
+    button, input, select, textarea {
+        font-size: 14px;
+        padding: 6px 10px;
+    }
+    .container {
+        transform: scale(1);
+        padding: 10px;
+    }
+    .header, .section {
+        padding: 15px; /* ลด padding เล็กน้อย */
+        margin-bottom: 15px; /* ลด margin เล็กน้อย */
+        transform: scale(0.95); /* ย่อขนาดลง 5% */
+        transform-origin: top left; /* ให้ย่อจากมุมซ้ายบน */
+    }
+    .form-group label {
+        font-size: 1.2em;
+    }
+    select, input, textarea {
+        padding: 10px; /* ลด padding เล็กน้อย */
+    }
+    .btn-order, .btn-reset, .btn-export, .btn-add {
+        padding: 10px 15px; /* ลด padding เล็กน้อย */
+        font-size: 1.1em; /* ลดขนาดฟอนต์เล็กน้อย */
+    }
+}
